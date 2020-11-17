@@ -1,1 +1,3 @@
 django
+python-socketio
+opencv-python

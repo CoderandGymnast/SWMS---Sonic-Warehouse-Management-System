@@ -51,4 +51,3 @@ class Section(models.Model):
 
 class Video(models.Model):
 	section = models.ForeignKey(Section, on_delete=models.CASCADE)
-

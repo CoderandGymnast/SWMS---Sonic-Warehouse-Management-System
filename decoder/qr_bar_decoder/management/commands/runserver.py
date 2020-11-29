@@ -1,14 +1,36 @@
 import sys
 
 from django.core.management.commands.runserver import Command as RunCommand
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from qr_bar_decoder.views import sio
 
+def create_accountant_role():
+	group, created = Group.objects.get_or_create(name="Accountant")
+	permissions = ["add_list", "view_list", "change_list", "delete_list", "add_product", "view_product", "change_product", "delete_product"]
+	for codename in permissions:
+		permission = Permission.objects.get(codename=codename)
+		group.permissions.add(permission)
+
+def create_warehouse_manager_role():
+	group, created = Group.objects.get_or_create(name="Warehouse Manager")
+	permissions = ["add_section", "view_section", "change_section", "delete_section"]
+	for codename in permissions:
+		permission = Permission.objects.get(codename=codename)
+		group.permissions.add(permission)
+
+def create_roles():
+	create_accountant_role()
+	create_warehouse_manager_role()
 
 class Command(RunCommand):
 	help = 'Run the Socket.IO server'
 
 	def handle(self, *args, **options):
+
+		create_roles()
+
 		try:
 			print(f"Asynchronous mode '{sio.async_mode}' selected.")
 			if sio.async_mode == 'threading':

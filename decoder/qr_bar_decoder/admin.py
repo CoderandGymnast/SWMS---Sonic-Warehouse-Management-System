@@ -20,6 +20,6 @@ class SectionAdmin(admin.ModelAdmin):
 	search_fields = ["id", "list", "published_date", "was_published_recently"]
 
 
+admin.site.register(Section, SectionAdmin)
 admin.site.register(List, ListAdmin)
 admin.site.register(Product)
-admin.site.register(Section, SectionAdmin)

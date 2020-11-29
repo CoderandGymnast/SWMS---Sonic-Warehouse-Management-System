@@ -8,7 +8,7 @@ from qr_bar_decoder.views import sio
 
 def create_accountant_role():
 	group, created = Group.objects.get_or_create(name="Accountant")
-	permissions = ["add_list", "view_list", "change_list", "delete_list", "add_product", "view_product", "change_product", "delete_product"]
+	permissions = ["add_list", "view_list", "change_list", "delete_list", "add_product", "view_product", "change_product", "delete_product", "add_item", "view_item", "change_item", "delete_item"]
 	for codename in permissions:
 		permission = Permission.objects.get(codename=codename)
 		group.permissions.add(permission)

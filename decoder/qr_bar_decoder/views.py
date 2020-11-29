@@ -82,3 +82,9 @@ def process_live_streaming_package(sid, data):
 			csv.write("{},{}\n".format(datetime.datetime.now(), barcode_data))
 			csv.flush()
 			found.add(barcode_data)
+
+def profile(request):
+	return render(
+		request,
+		"registration/profile.html"
+	)

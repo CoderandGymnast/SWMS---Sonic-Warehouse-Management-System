@@ -48,3 +48,13 @@ python manage.py shell
 ```python
 from django.contrib.auth.models import User
 ```
+
+6. "Reverse for 'login' not found. 'login' is not a valid view function or pattern name.":
+**Reason**: 
+```python
+path('accounts/login/', views.LoginView.as_view())
+```
+**Solution**: 
+```python
+path('accounts/login/', views.LoginView.as_view(), name="login")
+```

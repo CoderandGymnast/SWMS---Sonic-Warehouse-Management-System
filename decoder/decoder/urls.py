@@ -15,8 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import urls, views as auth_views
+# from qr_bar_decoder import views
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("qr_bar_decoder/", include("qr_bar_decoder.urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
+    # path("accounts/profile/", views.profile, name="profile"),
+    path("accounts/profile/", views.profile, name="profile")
 ]

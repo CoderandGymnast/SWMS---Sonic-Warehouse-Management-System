@@ -36,7 +36,7 @@ f.close()
 SECRET_KEY = '*g%#j+=m!(&!6x$*z6eg4xlr^-j4%fe8f6a2)z4y(#a4p6i8yi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Debug details in the browser.
+DEBUG = True  # Debug details in the browser.
 # INFO = False
 # WARNING = False
 # ERROR = False
@@ -154,3 +154,4 @@ STATIC_GIS_IMAGES_URL_PATTERN = "/admin/img/gis/"
 # [OPEN CV CONFIGURATION]:
 FRAME_MAX_WIDTH = 280  # 1. Galaxy Fold. 2. The more image size, the more time consuming.
 
+# LOGIN_REDIRECT_URL = "/admin/"

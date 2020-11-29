@@ -24,5 +24,5 @@ urlpatterns = [
     path("qr_bar_decoder/", include("qr_bar_decoder.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     # path("accounts/profile/", views.profile, name="profile"),
-    path("accounts/profile/", views.profile, name="profile")
+    path("accounts/profile/", views.profile, name="profile"),
 ]

@@ -12,6 +12,8 @@ from pyzbar import pyzbar
 
 from django.shortcuts import render
 from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 # from engineio.payload import Payload
 
@@ -30,10 +32,13 @@ sio = socketio.Server(async_mode=async_mode)
 thread = None
 
 def index(request):
-	return render(
-		request,
-		"qr_bar_decoder/index.html",
-	)
+	if request.user.is_authenticated:
+		return render(
+			request,
+			"qr_bar_decoder/index.html",
+		)
+	else:
+		return HttpResponseRedirect(reverse("login"), args=["/qr_bar_decoder/"])
 
 
 @sio.event

@@ -58,3 +58,10 @@ path('accounts/login/', views.LoginView.as_view())
 ```python
 path('accounts/login/', views.LoginView.as_view(), name="login")
 ```
+
+## III. Tricks: 
+1. Remove permissions: 
+```python
+for p in Permission.objects.filter(name__startswith="CRUD"):
+    p.delete()
+```

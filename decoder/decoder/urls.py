@@ -31,4 +31,5 @@ urlpatterns = [
 	# re_path(r'^accounts/login/(?P<next>[1-9]|10)/$', auth_views.LoginView.as_view(), name="login"),
 	# path("accounts/profile/", views.profile, name="profile"),
 	path("accounts/profile/", views.profile, name="profile"),
+	path("accounts/logout/", views.logout, name="logout"),
 ]

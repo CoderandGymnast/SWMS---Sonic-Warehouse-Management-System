@@ -155,3 +155,4 @@ STATIC_GIS_IMAGES_URL_PATTERN = "/admin/img/gis/"
 FRAME_MAX_WIDTH = 280  # 1. Galaxy Fold. 2. The more image size, the more time consuming.
 
 # LOGIN_REDIRECT_URL = "/admin/"
+LOGOUT_REDIRECT_URL = "/"

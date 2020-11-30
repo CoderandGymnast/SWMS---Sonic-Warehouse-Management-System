@@ -12,7 +12,7 @@ def create_accountant_role():
 	for codename in permissions:
 		permission = Permission.objects.get(codename=codename)
 		group.permissions.add(permission)
-
+	
 def create_warehouse_manager_role():
 	group, created = Group.objects.get_or_create(name="Warehouse Manager")
 	permissions = ["add_section", "view_section", "change_section", "delete_section"]

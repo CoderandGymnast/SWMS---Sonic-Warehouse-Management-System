@@ -23,3 +23,5 @@ def logout(request):
 	print("...")
 	logout(request)
 	return HttpResponseRedirect(reverse("login"))
+
+

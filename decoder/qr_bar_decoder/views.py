@@ -38,7 +38,7 @@ def index(request):
 			"qr_bar_decoder/index.html",
 		)
 	else:
-		return HttpResponseRedirect(reverse("login"), args=["/qr_bar_decoder/"])
+		return HttpResponseRedirect(f"{reverse('login')}?next={reverse('qr_bar_decoder:index')}")
 
 
 @sio.event
@@ -88,8 +88,4 @@ def process_live_streaming_package(sid, data):
 			csv.flush()
 			found.add(barcode_data)
 
-def profile(request):
-	return render(
-		request,
-		"registration/profile.html"
-	)
+

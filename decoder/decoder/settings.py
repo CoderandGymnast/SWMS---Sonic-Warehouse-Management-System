@@ -152,7 +152,9 @@ STATIC_IMAGES_URL_PATTERN = "/admin/img/"
 STATIC_GIS_IMAGES_URL_PATTERN = "/admin/img/gis/"
 
 # [OPEN CV CONFIGURATION]:
-FRAME_MAX_WIDTH = 280  # 1. Galaxy Fold. 2. The more image size, the more time consuming.
+# FRAME_MAX_WIDTH = 280  # 1. Galaxy Fold. 2. The more image size, the more time consuming.
+VIDEO_WIDTH = 640
+VIDEO_HEIGHT = 480
 
 # LOGIN_REDIRECT_URL = "/admin/"
 LOGOUT_REDIRECT_URL = "/"

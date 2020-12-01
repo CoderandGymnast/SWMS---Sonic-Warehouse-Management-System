@@ -14,6 +14,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from webptools import dwebp
 
 # from engineio.payload import Payload
 
@@ -31,7 +32,11 @@ async_mode = None  # Asynchronous mode.
 sio = socketio.Server(async_mode=async_mode)
 thread = None
 
+frames = []
+out = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'MP4V'), 24, (settings.VIDEO_WIDTH, settings.VIDEO_HEIGHT))
+
 def index(request):
+
 	if request.user.is_authenticated:
 		return render(
 			request,
@@ -48,25 +53,31 @@ def connect(sid, environment):  # "Infinite loops prevents the client connection
 # counter = 0
 @sio.on("Live Streaming Package")
 def process_live_streaming_package(sid, data):
-
+	# global counter
+	# print(counter)
+	# if counter == 50:
+	# 	return
+	# else:
+	# 	counter += 1
 	# sio.emit("barcode", {"data": "Sonic coder"}, room=sid)  # Socket.IO room: https://python-socketio.readthedocs.io/en/latest/server.html#rooms.
 
-	with open("capture.webp", "wb") as f:
-		f.write((base64.b64decode(re.sub("^data:image/webp;base64,", "", data))))
+	# with open("capture.webp", "wb") as f:
+	# 	f.write((base64.b64decode(re.sub("^data:image/webp;base64,", "", data))))
 
 	img = base64.b64decode(re.sub("^data:image/webp;base64,", "", data))
+	# dwebp("capture.webp", "frame.png", "-o")
+	# frame = cv2.imread("frame.png")
+	# out.write(frame)
+
 	npimg = np.fromstring(img, dtype=np.uint8)
-	image = imutils.resize(cv2.imdecode(npimg, 1), width=settings.FRAME_MAX_WIDTH)
+
+	image = imutils.resize(cv2.imdecode(npimg, 1), width=settings.VIDEO_WIDTH)
+	out.write(image)
+
 	# image = cv2.imdecode(npimg, 1)
 	# image = cv2.imread("capture.png") # Deprecated method.
 	barcodes = pyzbar.decode(image)
 	print(barcodes)
-
-	# return 0
-
-	# global counter
-	# counter += 1
-	# print(counter)
 
 	csv = open("./barcodes.csv", "w")
 	found = set()

@@ -30,6 +30,7 @@ urlpatterns = [
 	# path("accounts/login/?next=<path:next>", auth_views.LoginView.as_view(), name="login"),  # Path converters: https://docs.djangoproject.com/en/3.1/topics/http/urls/#path-converters
 	# re_path(r'^accounts/login/(?P<next>[1-9]|10)/$', auth_views.LoginView.as_view(), name="login"),
 	# path("accounts/profile/", views.profile, name="profile"),
-	path("accounts/profile/", views.profile, name="profile"),
+	# path("accounts/profile/", views.profile, name="profile"),
 	path("accounts/logout/", views.logout, name="logout"),
+	path("start", views.start, name="start"),
 ]

@@ -59,6 +59,9 @@ path('accounts/login/', views.LoginView.as_view())
 path('accounts/login/', views.LoginView.as_view(), name="login")
 ```
 
+7. Could not play videos created by OpenCV: 
+**Reason**: Video - Writing thread is corrupted.
+
 ## III. Tricks: 
 1. Remove permissions: 
 ```python

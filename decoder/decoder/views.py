@@ -39,7 +39,7 @@ def start(request):
 		return render(
 			request,
 			"start.html",
-			{"section_id": section_id, "items": items, "products": products}
+			{"section_id": section_id, "items": items, "products": products, "range": range(len(items))}
 		)
 	else:
 		return HttpResponseRedirect(

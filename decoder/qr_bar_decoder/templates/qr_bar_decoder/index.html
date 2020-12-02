@@ -1,168 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
 
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Live     Streaming QR/Bar Decoder</title>
+<head>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
-<!--        <script type="text/javascript" src="/socket.io/socket.io.js"></script>-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Live Streaming QR/Bar Decoder</title>
 
-        <style>
-            * {
-                margin: 0;
-            }
-            #stream-screen {
-                object-fit: cover;
-            }
-            #scanning-box {
-                position: absolute;
-                top: 0; right: 0; bottom: 0; left: 0;
-                margin: auto;
-            }
-        </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
+    <!--        <script type="text/javascript" src="/socket.io/socket.io.js"></script>-->
 
-    </head>
+    <style>
+        * {
+            margin: 0;
+        }
 
-    <body>
-        <div id="container">
-            <video src="" id="stream-screen" style="width:100%; height: 100%;" autoplay="true"></video>
-            <canvas id="scanning-box"></canvas>
-            <!-- <canvas id="WIP"></canvas> -->
-        </div>
+        #stream-screen {
+            object-fit: cover;
+        }
 
-        <script>
+        #scanning-box {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+        }
 
-            const drawPolilines = (context, coordinates, lineWidth, total) => {
-                context.beginPath()
-                context.lineWidth = lineWidth
-                context.moveTo(coordinates[0][0], coordinates[0][1])
-                for (var i = 1; i < total; i++) context.lineTo(coordinates[i][0], coordinates[i][1])
-                context.stroke()
-            }
+        #code {
+            display: inline;
+            position: absolute;
+            top: 4%;
+            left: 10%;
+            font-size: 150%;
+            font-weight: bold;
+            color: red;
+        }
+    </style>
 
-            const canvas = document.getElementById("scanning-box")
-            const context = canvas.getContext("2d")
-            var canvasWidth = window.innerWidth * 0.8
-            var canvasHeight = window.innerHeight * 0.8
+</head>
 
-            const drawCanvas = context => {
+<body>
+    <div id="container">
+        <video src="" id="stream-screen" style="width:100%; height: 100%;" autoplay="true"></video>
+        <canvas id="scanning-box"></canvas>
+        <!-- <canvas id="WIP"></canvas> -->
+    </div>
+    <p id="code"></p>
 
-                context.save()
-                context.clearRect(0, 0, canvasWidth, canvasHeight)
-                
-                canvasWidth = window.innerWidth * 0.8
-                canvasHeight = window.innerHeight * 0.8
+    <script>
 
-                context.canvas.width = canvasWidth
-                context.canvas.height = canvasHeight
+        const drawPolilines = (context, coordinates, lineWidth, total) => {
+            context.beginPath()
+            context.lineWidth = lineWidth
+            context.moveTo(coordinates[0][0], coordinates[0][1])
+            for (var i = 1; i < total; i++) context.lineTo(coordinates[i][0], coordinates[i][1])
+            context.stroke()
+        }
 
-                const LINE_HEIGHT = 50
-                const CANVAS_PADDING = 10
-                context.strokeStyle = "red" /* Must define "context.strokeStyle" inside this function. */
+        const canvas = document.getElementById("scanning-box")
+        const context = canvas.getContext("2d")
+        var canvasWidth = window.innerWidth * 0.8
+        var canvasHeight = window.innerHeight * 0.8
 
-                drawPolilines(context, [[CANVAS_PADDING, LINE_HEIGHT + CANVAS_PADDING], [CANVAS_PADDING, CANVAS_PADDING], [LINE_HEIGHT + CANVAS_PADDING, CANVAS_PADDING]], 5, 3)
-                drawPolilines(context, [[canvasWidth - LINE_HEIGHT - CANVAS_PADDING, CANVAS_PADDING], [canvasWidth - CANVAS_PADDING, CANVAS_PADDING], [canvasWidth - CANVAS_PADDING, LINE_HEIGHT + CANVAS_PADDING]], 5, 3)    
-                drawPolilines(context, [[canvasWidth - CANVAS_PADDING, canvasHeight - LINE_HEIGHT - CANVAS_PADDING], [canvasWidth - CANVAS_PADDING, canvasHeight - CANVAS_PADDING], [canvasWidth - LINE_HEIGHT - CANVAS_PADDING, canvasHeight - CANVAS_PADDING]], 5, 3)
-                drawPolilines(context, [[LINE_HEIGHT + CANVAS_PADDING, canvasHeight - CANVAS_PADDING], [CANVAS_PADDING, canvasHeight - CANVAS_PADDING], [CANVAS_PADDING, canvasHeight - LINE_HEIGHT - CANVAS_PADDING]], 5, 3)
+        const drawCanvas = context => {
 
-                $("#container").css("height", window.innerHeight)
+            context.save()
+            context.clearRect(0, 0, canvasWidth, canvasHeight)
 
-                context.restore()
-            }
+            canvasWidth = window.innerWidth * 0.8
+            canvasHeight = window.innerHeight * 0.8
 
-            const animate = async (context, status) => {
+            context.canvas.width = canvasWidth
+            context.canvas.height = canvasHeight
 
-                context.save()
-                context.clearRect(0, 0, canvasWidth, canvasHeight)
+            const LINE_HEIGHT = 50
+            const CANVAS_PADDING = 10
+            context.strokeStyle = "red" /* Must define "context.strokeStyle" inside this function. */
 
-                const PLUS_HEIGHT = 80
+            drawPolilines(context, [[CANVAS_PADDING, LINE_HEIGHT + CANVAS_PADDING], [CANVAS_PADDING, CANVAS_PADDING], [LINE_HEIGHT + CANVAS_PADDING, CANVAS_PADDING]], 5, 3)
+            drawPolilines(context, [[canvasWidth - LINE_HEIGHT - CANVAS_PADDING, CANVAS_PADDING], [canvasWidth - CANVAS_PADDING, CANVAS_PADDING], [canvasWidth - CANVAS_PADDING, LINE_HEIGHT + CANVAS_PADDING]], 5, 3)
+            drawPolilines(context, [[canvasWidth - CANVAS_PADDING, canvasHeight - LINE_HEIGHT - CANVAS_PADDING], [canvasWidth - CANVAS_PADDING, canvasHeight - CANVAS_PADDING], [canvasWidth - LINE_HEIGHT - CANVAS_PADDING, canvasHeight - CANVAS_PADDING]], 5, 3)
+            drawPolilines(context, [[LINE_HEIGHT + CANVAS_PADDING, canvasHeight - CANVAS_PADDING], [CANVAS_PADDING, canvasHeight - CANVAS_PADDING], [CANVAS_PADDING, canvasHeight - LINE_HEIGHT - CANVAS_PADDING]], 5, 3)
 
-                drawCanvas(context)
-                if(status) {
-                    drawPolilines(context, [[canvasWidth / 2, canvasHeight / 2 - PLUS_HEIGHT], [canvasWidth / 2, canvasHeight / 2 + PLUS_HEIGHT]], 1, 2)
-                    drawPolilines(context, [[canvasWidth / 2 - PLUS_HEIGHT, canvasHeight / 2], [canvasWidth / 2 + PLUS_HEIGHT, canvasHeight / 2]], 1, 2)
-                }
-                
-                context.restore()
+            $("#container").css("height", window.innerHeight)
 
-                const loopTime = new Promise(response => setTimeout(() => {
-                    animate(context, !status)
-                }, 400))
-                await loopTime
-            }
+            context.restore()
+        }
+
+        const animate = async (context, status) => {
+
+            context.save()
+            context.clearRect(0, 0, canvasWidth, canvasHeight)
+
+            const PLUS_HEIGHT = 80
 
             drawCanvas(context)
-            animate(context, 0, 0)
-
-            $(window).resize(() => {
-                drawCanvas(context)
-            })
-        </script>
-
-        <script type="text/javascript">
-
-            const captureCanvas = document.createElement("canvas")
-            const captureContext = captureCanvas.getContext("2d")
-            const video = document.getElementById("stream-screen")
-
-            const sio = io();
-            sio.on("connect", data => {
-            })
-
-            sio.on("Barcodes", data => {
-            	
-            })
-
-            const loadCamera = (stream) => {
-              try {
-                  video.srcObject = stream;
-              }
-
-              catch (error) {
-               video.src = URL.createObjectURL(stream);
-              }
+            if (status) {
+                drawPolilines(context, [[canvasWidth / 2, canvasHeight / 2 - PLUS_HEIGHT], [canvasWidth / 2, canvasHeight / 2 + PLUS_HEIGHT]], 1, 2)
+                drawPolilines(context, [[canvasWidth / 2 - PLUS_HEIGHT, canvasHeight / 2], [canvasWidth / 2 + PLUS_HEIGHT, canvasHeight / 2]], 1, 2)
             }
 
-            const loadFail = () =>{
+            context.restore()
 
+            const loopTime = new Promise(response => setTimeout(() => {
+                animate(context, !status)
+            }, 400))
+            await loopTime
+        }
+
+        drawCanvas(context)
+        animate(context, 0, 0)
+
+        $(window).resize(() => {
+            drawCanvas(context)
+        })
+    </script>
+
+    <script type="text/javascript">
+
+        const captureCanvas = document.createElement("canvas")
+        const captureContext = captureCanvas.getContext("2d")
+        const video = document.getElementById("stream-screen")
+
+        const sio = io();
+        sio.on("connect", data => {
+        })
+
+        sio.on("Barcodes", data => {
+            $("#code").text(`CODE: ${data.data}`)
+        })
+
+        const loadCamera = (stream) => {
+            try {
+                video.srcObject = stream;
             }
 
-            const setCaptureCanvasSize = () => {
-                captureCanvas.width = video.videoWidth
-                captureCanvas.height = video.videoHeight
+            catch (error) {
+                video.src = URL.createObjectURL(stream);
+            }
+        }
+
+        const loadFail = () => {
+
+        }
+
+        const setCaptureCanvasSize = () => {
+            captureCanvas.width = video.videoWidth
+            captureCanvas.height = video.videoHeight
+        }
+
+        const emitCapture = () => {
+            captureContext.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height)
+            sio.emit("Live Streaming Package", captureCanvas.toDataURL("image/webp"));
+        }
+
+        $(function () {
+
+            navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msgGetUserMedia);
+
+            if (navigator.getUserMedia) {
+                navigator.getUserMedia({
+                    video: true,
+                    audio: false
+                }, loadCamera, loadFail);
             }
 
-            const emitCapture = () => {
-                captureContext.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height)
-                sio.emit("Live Streaming Package", captureCanvas.toDataURL("image/webp"));
-            }
-
-            $(function(){
-
-                navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msgGetUserMedia );
-
-                if(navigator.getUserMedia)
-                {
-                    navigator.getUserMedia({
-                        video: true,
-                        audio: false
-                    }, loadCamera, loadFail);
-                }
-
-                video.addEventListener("loadeddata", () => {
+            video.addEventListener("loadeddata", () => {
 
                 setCaptureCanvasSize()
 
-                setInterval(function(){
+                setInterval(function () {
                     emitCapture()
                 }, 0);
 
-                }, false)
-            });
+            }, false)
+        });
 
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>

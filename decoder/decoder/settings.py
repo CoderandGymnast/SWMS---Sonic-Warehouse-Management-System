@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+import re
 
 from pathlib import Path
 
@@ -81,6 +82,7 @@ TEMPLATES = [
 				'django.template.context_processors.request',
 				'django.contrib.auth.context_processors.auth',
 				'django.contrib.messages.context_processors.messages',
+				"django.template.context_processors.media"
 			],
 		},
 	},
@@ -133,6 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 # LOGGING = {  # Reference: https://docs.djangoproject.com/en/1.8/topics/logging/.
 # 	'version': 1,
@@ -146,6 +149,7 @@ STATIC_URL = '/static/'
 # }
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # python manage.py collectstatic
+MEDIA_ROOT = re.sub(r'SWMS---Sonic-Warehouse-Management-System\\decoder\\static$', 'videos', STATIC_ROOT)
 
 # [IMAGES URL PATTERN]:
 STATIC_IMAGES_URL_PATTERN = "/admin/img/"
@@ -164,4 +168,3 @@ LOGOUT_REDIRECT_URL = "/"
 """
 APPLICATION_JS_URL_PATTERN = "/js/"
 APPLICATION_JS_VENDOR_URL_PATTERN = "/js/vendor/"
-

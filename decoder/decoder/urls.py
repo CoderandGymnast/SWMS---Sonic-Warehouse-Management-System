@@ -18,8 +18,10 @@ from django.urls import path, include, re_path
 from django.contrib.auth import urls, views as auth_views
 # from qr_bar_decoder import views
 from . import views
+from django.conf.urls.static import static
 
 from urllib.parse import urlparse
+from django.conf import settings
 
 urlpatterns = [
 	path("", views.landing, name="landing"),
@@ -34,4 +36,4 @@ urlpatterns = [
 	path("accounts/logout/", views.logout, name="logout"),
 	path("start/", views.start, name="start"),
 	path("start/save", views.save, name="save"),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

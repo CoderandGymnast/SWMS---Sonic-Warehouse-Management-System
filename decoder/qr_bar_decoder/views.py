@@ -33,7 +33,7 @@ sio = socketio.Server(async_mode=async_mode)
 thread = None
 
 frames = []
-out = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'MP4V'), 24, (settings.VIDEO_WIDTH, settings.VIDEO_HEIGHT))
+out = cv2.VideoWriter('', cv2.VideoWriter_fourcc(*'MP4V'), 24, (settings.VIDEO_WIDTH, settings.VIDEO_HEIGHT))
 
 def index(request):
 

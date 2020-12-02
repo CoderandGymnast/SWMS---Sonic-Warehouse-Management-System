@@ -68,3 +68,6 @@ path('accounts/login/', views.LoginView.as_view(), name="login")
 for p in Permission.objects.filter(name__startswith="CRUD"):
     p.delete()
 ```
+
+## IV. Design References: 
+1. [freshdesignweb.com](https://freshdesignweb.com/free-css-tables/)

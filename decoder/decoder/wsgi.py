@@ -40,7 +40,6 @@ configure_images_onto_static_files(settings.STATIC_IMAGES_URL_PATTERN)
 configure_images_onto_static_files(settings.STATIC_GIS_IMAGES_URL_PATTERN)
 
 application = socketio.WSGIApp(sio, django_application, static_files=static_files)
-
 """
 [NOTES]: 
 1. ".svg" content type: https://www.google.com/search?q=content_type+of+.svg&rlz=1C1CHBF_enVN892VN892&oq=content_type+of+.svg&aqs=chrome..69i57j0i22i30i457j0i22i30l6.12452j0j7&sourceid=chrome&ie=UTF-8.

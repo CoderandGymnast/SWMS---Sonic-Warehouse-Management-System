@@ -25,7 +25,11 @@ static_files = {  # Serving Static Files: https://python-socketio.readthedocs.io
 	# f"{settings.STATIC_URL}": settings.STATIC_ROOT,
 	# "/static/": settings.STATIC_ROOT,
 	f"{re.sub(r'/$', '', settings.STATIC_URL)}": settings.STATIC_ROOT,  # Do not need the Escaped Character "\".
+	f"{settings.STATIC_URL}qr_bar_decoder/js/vendor/jquery.fixedheadertable.min.js": {"filename": f"{settings.STATIC_URL}qr_bar_decoder/js/vendor/jquery.fixedheadertable.min.js", "content_type": "application/javascript"}
 }
+
+print(static_files[f"{settings.STATIC_URL}qr_bar_decoder/js/vendor/jquery.fixedheadertable.min.js"])
+print(f"{settings.STATIC_URL}qr_bar_decoder/js/vendor/jquery.fixedheadertable.min.js" == "/static/qr_bar_decoder/js/vendor/jquery.fixedheadertable.min.js")
 
 def image_filter(name):
 	return True if re.search(".svg$", name) else False
@@ -33,6 +37,7 @@ def image_filter(name):
 def configure_images_onto_static_files(url_pattern):
 	images = filter(image_filter, os.listdir(f"{settings.STATIC_ROOT}{url_pattern}"))
 	for i in images:
+		print(f"{re.sub(r'/$', '', settings.STATIC_URL)}{url_pattern}{i}")
 		static_files[f"{re.sub(r'/$', '', settings.STATIC_URL)}{url_pattern}{i}"] = {"filename": f"{settings.STATIC_ROOT}{url_pattern}{i}", "content_type": "image/svg+xml"}
 
 

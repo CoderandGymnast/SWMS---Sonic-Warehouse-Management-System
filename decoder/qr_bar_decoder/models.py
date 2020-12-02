@@ -34,7 +34,9 @@ class List(models.Model):
 class Item(models.Model):
 	product = models.ForeignKey(Product, on_delete=models.CASCADE)
 	list = models.ForeignKey(List, on_delete=models.CASCADE)
-	quantity = models.IntegerField()
+	quantities = models.IntegerField()
+	in_progress = models.IntegerField(default=0)
+	status = models.BooleanField(default=False)  # Could not change the default status of all available items.
 
 class Section(models.Model):
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth import logout
 from django.views import generic
@@ -44,5 +44,29 @@ def start(request):
 	else:
 		return HttpResponseRedirect(
 			f"{reverse('login')}?next={reverse('start')}")
+
+def standardize_statuses(status):
+	return True if status == "true" else False
+
+# @csrf_protect
+def save(request):
+	if request.method == 'POST':
+
+		section_id = request.POST.get("sectionID", None)
+		quantities = request.POST.getlist("quantities[]")
+		statuses = list(map(standardize_statuses, request.POST.getlist("statuses[]", None)))
+		codes = request.POST.getlist("codes[]", None)
+
+		list_id = List.objects.get(section__pk=section_id).id
+		items = Item.objects.filter(list__pk=list_id)
+
+		for i, code in enumerate(codes):
+			for item in items:
+				if item.product.code == code:
+					item.status = statuses[i]
+					item.in_progress = quantities[i]
+					item.save()
+
+	return HttpResponse(status=200)
 
 

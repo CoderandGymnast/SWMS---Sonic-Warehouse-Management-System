@@ -87,7 +87,9 @@ def process_live_streaming_package(sid, data):
 		cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
 		barcode_data = barcode.data.decode("utf-8")
-		sio.emit("Barcodes", {"data": barcode_data}, room=sid)  # Socket.IO room: https://python-socketio.readthedocs.io/en/latest/server.html#rooms.
+		# sio.emit("Barcodes", {"data": barcode_data}, room=sid)  # Socket.IO room: https://python-socketio.readthedocs.io/en/latest/server.html#rooms.
+		sio.emit("Barcodes", {"data": barcode_data})
+
 		barcode_type = barcode.type
 
 		text = "{} ({})".format(barcode_data, barcode_type)
@@ -98,5 +100,3 @@ def process_live_streaming_package(sid, data):
 			csv.write("{},{}\n".format(datetime.datetime.now(), barcode_data))
 			csv.flush()
 			found.add(barcode_data)
-
-

@@ -32,5 +32,6 @@ urlpatterns = [
 	# path("accounts/profile/", views.profile, name="profile"),
 	# path("accounts/profile/", views.profile, name="profile"),
 	path("accounts/logout/", views.logout, name="logout"),
-	path("start", views.start, name="start"),
+	path("start/", views.start, name="start"),
+	path("start/save", views.save, name="save"),
 ]

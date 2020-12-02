@@ -9,6 +9,7 @@
 	<!--	<script src="{% static 'qr_bar_decoder/js/vendor/jquery.fixedheadertable.min.js' %}"></script>-->
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/fixed-header-table/1.3.0/jquery.fixedheadertable.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
 	<title>START</title>
 	<style>
 		/*
@@ -63,6 +64,12 @@
 			font-size: 1em;
 			text-align: left;
 			color: #185875;
+		}
+
+		.container tbody tr td:nth-child(1) {
+			padding: 0;
+			text-align: center;
+			width: 5%;
 		}
 
 		.container td {
@@ -142,39 +149,56 @@
 	<table class="container">
 		<thead>
 			<tr>
-				<th><h1></h1></th>
-				<th><h1>CODE</h1></th>
-				<th><h1>NAME</h1></th>
-				<th><h1>TOTAL</h1></th>
-				<th><h1>WIP</h1></th>
+				<th>
+					<h1></h1>
+				</th>
+				<th>
+					<h1>CODE</h1>
+				</th>
+				<th>
+					<h1>NAME</h1>
+				</th>
+				<th>
+					<h1>TOTAL</h1>
+				</th>
+				<th>
+					<h1>WIP</h1>
+				</th>
+				<th>
+					<h1>STATUS</h1>
+				</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for i in range %}
-				<tr>
-					<td>{{ i }}</td>
-					{% with  product=products|index:i item=items|index:i %}
-						<td>{{ product.code }}</td>
-						<td>{{ product.name }}</td>
-						<td>{{ item.quantity }}</td>
-					{% endwith %}	
-				</tr>
+			<tr>
+				<td>{{ i }}</td>
+				{% with  product=products|index:i item=items|index:i %}
+				<td>{{ product.code }}</td>
+				<td>{{ product.name }}</td>
+				<td>{{ item.quantities }}</td>
+				<td contenteditable>{{ item.in_progress }}</td>
+				{% if item.status %}
+				<td>Scanned</td>
+				{% else %}
+				<td>Unscanned</td>
+				{% endif %}
+				{% endwith %}
+			</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 	<div>
-		<button id="trigger">START</button>
+		<button id="trigger">SAVE</button>
 	</div>
-	<div>
-	</div>
-	<!--	{{ section_id }}-->
-	<!--	{{ items }}-->
-		{% for i in range %}
-			{% with  product=products|index:i %}
-				{{ product }}
-			{% endwith %}
-		{% endfor %}
+	{% csrf_token %}
 	<script>
+		const codes = []
+		var statuses
+		var quantities
+		const items = $(".container tbody tr")
+		for (let i of items) codes.push(i.cells[1].textContent)
+
 		// const buttonTexts = ["START", "STOP"]
 		$("#trigger").click(function () {
 			// const buttonText = $(this).text()
@@ -183,8 +207,111 @@
 			// })
 			// $(this).html(buttonTexts[1 - index])
 
-			$(this).html($(this).text() === "START" ? "STOP" : "START")
+			// $(this).html($(this).text() === "START" ? "STOP" : "START")
+
+			/* Django AJAX reference: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax */
+			const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+			// const request = new Request(  /* JS Request reference: https://developer.mozilla.org/en-US/docs/Web/API/Request */  
+			// 	"{% url 'save' %}",
+			// 	{
+			// 		method: "POST",
+			// 		headers: { 'X-CSRFToken': csrftoken },
+			// 		body: '{ name: "sonic" }'
+			// 	}
+			// )
+
+			// fetch(request, {
+			// 	method: 'POST',
+			// 	mode: 'same-origin'
+			// }).then(function (response) {
+
+			// });
+
+			quantities = []
+			statuses = []
+			for (let i of items) {
+				quantities.push(parseInt(i.cells[4].textContent))
+				statuses.push(i.cells[5].textContent === "Unscanned" ? false : true)
+			}
+
+			$.ajax({
+				headers: {
+					'X-CSRFToken': csrftoken
+				},
+				type: "POST",
+				url: "{% url 'save' %}",
+				data: {
+					"sectionID": "{{ section_id }}",
+					"quantities[]": quantities,
+					"statuses[]": statuses,
+					"codes[]": codes,
+				},
+				success: function (e) {
+					console.log(e)
+				},
+				error: function (e) {
+					console.log(e)
+				},
+				dataType: "json"
+			})
 		})
+
+		const sio = io()
+		sio.on("connect", data => {
+
+		})
+
+		var processingRow, processingData, processingBackgroundColor
+		sio.on("Barcodes", data => {
+
+			if (processingRow) {
+				processingRow.css("background-color", processingBackgroundColor)
+				processingRow.css("color", "white")
+			}
+			if (processingData) processingData.css("font-weight", "bold")
+
+			code = data.data
+			let index = codes.findIndex(function (e) { return e === code })
+			if (!(index !== -1)) return
+
+			items[index].cells[5].textContent = "Scanned"
+			processingRow = $(`.container tbody tr:nth-child(${++index})`)
+			processingBackgroundColor = processingRow.css("background-color")
+			processingRow.css("background-color", "#74cc82")
+			processingRow.css("color", "black")
+
+			processingData = $(`.container tbody tr:nth-child(${index}) td`)
+			processingData.css("font-weight", "bold")
+		})
+
+		const quantitiesPattern = new RegExp("[1-9]\d*$")
+		const CTROL_KEY_CODE = 17
+		$("td").keyup(function (e) {
+			if (e.ctrlKey || e.which === CTROL_KEY_CODE) return
+			if (!$(this).text().length) return
+			const quantities = $(this).text($(this).text().replace(/[^0-9]/g, ''))
+			if ($(this).text().length >= 2) $(this).text($(this).text().replace(/^0+/, ''))
+			$(this).attr("id", "editable")
+			const position = $(this).text().length
+			setCursor(position);
+			$(this).removeAttr("id")
+		})
+
+		function setCursor(position) {
+			var tag = document.getElementById("editable");
+			var setPosition = document.createRange();
+			var set = window.getSelection();
+			setPosition.setStart(tag.childNodes[0], position);
+			setPosition.collapse(true);
+			set.removeAllRanges();
+			set.addRange(setPosition);
+			tag.focus();
+		}
+
+		$("td").focusout(function () {
+			$(this).text(!$(this).text() ? 0 : $(this).text())
+		})
+
 	</script>
 </body>
 

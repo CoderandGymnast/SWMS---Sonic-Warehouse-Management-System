@@ -69,5 +69,27 @@ for p in Permission.objects.filter(name__startswith="CRUD"):
     p.delete()
 ```
 
+8. Could not parse the remainder: ' 'save'' from 'url 'save'': 
+**Reason**: 
+```HTML
+{{ url 'save' }}
+```
+
+**Solution**: 
+```HTML
+{% url 'save' %}
+```
+
+9. "get() returned more than one Item -- it returned 3!": 
+**Reason**: 
+```python
+i = Item.objects.get(list__pk=5)
+```
+
+```python
+i = Item.objects.filter(list__pk=5)
+```
+
+
 ## IV. Design References: 
 1. [freshdesignweb.com](https://freshdesignweb.com/free-css-tables/)

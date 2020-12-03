@@ -93,3 +93,7 @@ i = Item.objects.filter(list__pk=5)
 
 ## IV. Design References: 
 1. [freshdesignweb.com](https://freshdesignweb.com/free-css-tables/)
+
+## V. Todos: 
+* Join.
+* F.

@@ -40,6 +40,24 @@
         }
     </style>
 
+    <style>
+        button, button:active {
+            position: absolute;
+            bottom: 1%;
+            right: 10%;
+            background-color: yellow;
+            border: 0;
+            outline: 0;
+            border-radius: 3px;
+            padding: 1% 3%;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #ffd400;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -49,6 +67,7 @@
         <!-- <canvas id="WIP"></canvas> -->
     </div>
     <p id="code"></p>
+    <button>CANCEL</button>
 
     <script>
 
@@ -120,6 +139,12 @@
     </script>
 
     <script type="text/javascript">
+
+        $("button").click(function () {
+            // window.top.close();
+            sio.emit("STOP SECTION", { status: 1 });
+            window.location.replace("{% url 'landing' %}");
+        })
 
         const captureCanvas = document.createElement("canvas")
         const captureContext = captureCanvas.getContext("2d")

@@ -12,8 +12,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
 	<title>START</title>
 	<style>
-
-		
 		* {
 			margin: 0;
 			font-weight: bold !important;
@@ -177,11 +175,26 @@
 			color: white;
 		}
 
+		#scan {
+			float: right;
+			margin-right: 8%;
+			border: none;
+			background-color: slategray;
+			outline: none;
+			padding: 5px 20px;
+			border-radius: 4px;
+			color: white;
+		}
+
+		#scan:hover {
+			background-color: #5b5b59;
+		}
+
 		#trigger {
 			border-radius: 4px;
 			padding: 5px 20px;
 			float: right;
-			margin-right: 5%;
+			margin-right: 2%;
 			background-color: yellow;
 			border: none;
 			color: black;
@@ -205,7 +218,7 @@
 <body>
 
 	{% include "header.html" %}
-</div>
+	</div>
 
 
 	<table class="container">
@@ -251,10 +264,16 @@
 		</tbody>
 	</table>
 	<div>
+		<button id="scan"><a style="color:white;">SCAN</a></button>
 		<button id="trigger">SAVE</button>
 	</div>
 	{% csrf_token %}
 	<script>
+
+		$("#scan").click(function() {
+			window.open("{% url 'qr_bar_decoder:index' %}");
+		})
+
 		const codes = []
 		var statuses
 		var quantities

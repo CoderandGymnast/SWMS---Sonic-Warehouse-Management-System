@@ -7,6 +7,7 @@ import re
 import time
 import socketio
 import eventlet
+import os
 
 from pyzbar import pyzbar
 
@@ -15,6 +16,8 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from webptools import dwebp
+from django.conf import settings
+from .models import Video, Section
 
 # from engineio.payload import Payload
 
@@ -32,9 +35,6 @@ async_mode = None  # Asynchronous mode.
 sio = socketio.Server(async_mode=async_mode)
 thread = None
 
-frames = []
-out = cv2.VideoWriter('', cv2.VideoWriter_fourcc(*'MP4V'), 24, (settings.VIDEO_WIDTH, settings.VIDEO_HEIGHT))
-
 def index(request):
 
 	if request.user.is_authenticated:
@@ -49,6 +49,40 @@ def index(request):
 @sio.event
 def connect(sid, environment):  # "Infinite loops prevents the client connections.
 	print(f"connect {sid}")
+
+
+frames = []
+
+"""
+[NOTES]: I don't know why this woker does not miss any frame.
+"""
+
+out = None
+
+"""
+[NOTES]: Must follow all steps to record videos.
+"""
+@sio.on("START SECTION")
+def process_start_section(sid, data):
+	print(data)
+	section_id = data
+	global out
+	os.mkdir(f"{settings.MEDIA_ROOT}/{section_id}")
+	out = cv2.VideoWriter(f"{settings.MEDIA_ROOT}/{section_id}/capture.mp4", 0x00000021, 24, (settings.VIDEO_WIDTH, settings.VIDEO_HEIGHT))  # https://stackoverflow.com/questions/49530857/python-opencv-video-format-play-in-browser
+	s = Section.objects.get(pk=section_id)
+	capture = Video(url=f"{settings.MEDIA_URL}{section_id}/capture.mp4", section=s)
+	capture.save()
+
+
+
+@sio.on("STOP SECTION")
+def process_stop_section(sid, data):
+	global frames
+	for frame in frames:
+		out.write(frame)
+	frames = []
+	out.release()
+
 
 # counter = 0
 @sio.on("Live Streaming Package")
@@ -72,7 +106,7 @@ def process_live_streaming_package(sid, data):
 	npimg = np.fromstring(img, dtype=np.uint8)
 
 	image = imutils.resize(cv2.imdecode(npimg, 1), width=settings.VIDEO_WIDTH)
-	out.write(image)
+	frames.append(image)
 
 	# image = cv2.imdecode(npimg, 1)
 	# image = cv2.imread("capture.png") # Deprecated method.

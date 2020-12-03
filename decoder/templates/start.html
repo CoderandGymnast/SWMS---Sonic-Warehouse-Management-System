@@ -220,7 +220,6 @@
 	{% include "header.html" %}
 	</div>
 
-
 	<table class="container">
 		<thead>
 			<tr>
@@ -270,7 +269,10 @@
 	{% csrf_token %}
 	<script>
 
+		const sectionID = "{{ section_id }}"
+
 		$("#scan").click(function() {
+			sio.emit("START SECTION", sectionID)
 			window.open("{% url 'qr_bar_decoder:index' %}");
 		})
 

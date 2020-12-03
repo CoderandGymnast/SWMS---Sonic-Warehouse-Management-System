@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Product, Item, List, Section
+from .models import Product, Item, List, Section, Video
 
 class ItemInline(admin.TabularInline):
 	model = Item
@@ -23,3 +23,4 @@ class SectionAdmin(admin.ModelAdmin):
 admin.site.register(Section, SectionAdmin)
 admin.site.register(List, ListAdmin)
 admin.site.register(Product)
+admin.site.register(Video)

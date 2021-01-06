@@ -82,7 +82,6 @@ def process_start_section(sid, data):
 	capture.save()
 
 
-
 @sio.on("STOP SECTION")
 def process_stop_section(sid, data):
 	global frames

@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib.auth import logout
 from django.views import generic
 
-from qr_bar_decoder.models import Section, List, Item, Product
+from qr_bar_decoder.models import Section, List, Item, Product, Video
 
 def landing(request):
 	if request.user.is_authenticated:
@@ -68,5 +68,29 @@ def save(request):
 					item.save()
 
 	return HttpResponse(status=200)
+
+def videos(request):
+
+	section_videos = Video.objects.all()
+	dicts = []
+	sections = []
+	for video in section_videos:
+
+		if video.section in sections:
+			continue
+		else:
+			sections.append(video.section)
+
+		video = {
+			"url": video.url,
+			"section": video.section,
+		}
+		dicts.append(video)
+
+	return render(
+		request,
+		"registration/videos.html",
+		{"videos": dicts, "range": range(len(dicts))}
+	)
 
 

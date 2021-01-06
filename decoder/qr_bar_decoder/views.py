@@ -19,6 +19,8 @@ from webptools import dwebp
 from django.conf import settings
 from .models import Video, Section
 
+from django.utils import timezone
+
 # from engineio.payload import Payload
 
 # Payload.max_decode_packets = 500
@@ -64,13 +66,19 @@ out = None
 """
 @sio.on("START SECTION")
 def process_start_section(sid, data):
-	print(data)
 	section_id = data
 	global out
-	os.mkdir(f"{settings.MEDIA_ROOT}/{section_id}")
+
+	print("Before exception")
+	try:
+		os.mkdir(f"{settings.MEDIA_ROOT}/{section_id}")
+	except FileExistsError:  # Built-in exception.
+		print("FileExistsError: [WinError 183] Cannot create a file when that file already exists")
+
+	print("After exception...")
 	out = cv2.VideoWriter(f"{settings.MEDIA_ROOT}/{section_id}/capture.mp4", 0x00000021, 24, (settings.VIDEO_WIDTH, settings.VIDEO_HEIGHT))  # https://stackoverflow.com/questions/49530857/python-opencv-video-format-play-in-browser
 	s = Section.objects.get(pk=section_id)
-	capture = Video(url=f"{settings.MEDIA_URL}{section_id}/capture.mp4", section=s)
+	capture = Video(name=timezone.now(), url=f"{settings.DOMAIN_NAME}{settings.MEDIA_URL}{section_id}/capture.mp4", section=s)
 	capture.save()
 
 
@@ -110,7 +118,7 @@ def process_live_streaming_package(sid, data):
 
 	# image = cv2.imdecode(npimg, 1)
 	# image = cv2.imread("capture.png") # Deprecated method.
-	barcodes = pyzbar.decode(image)
+	barcodes = pyzbar.decode(image, symbols=[pyzbar.ZBarSymbol.CODE128])
 	print(barcodes)
 
 	csv = open("./barcodes.csv", "w")

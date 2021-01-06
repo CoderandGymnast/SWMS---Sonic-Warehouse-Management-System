@@ -40,6 +40,7 @@ class Item(models.Model):
 
 class Section(models.Model):
 
+	id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
 	list = models.OneToOneField(List, on_delete=models.CASCADE)
 	published_date = models.DateTimeField(default=timezone.now(), verbose_name="Published Date")
 
@@ -47,10 +48,19 @@ class Section(models.Model):
 		now = timezone.now()
 		return now - datetime.timedelta(days=1) <= self.published_date <= now
 
+	def __str__(self):
+		return str(self.id)
+
 	was_published_recently.admin_order_field = "published_date"
 	was_published_recently.boolean = True
 	was_published_recently.short_description = "Publishded recently?"
 
 class Video(models.Model):
+
+	name = models.CharField(default=timezone.now(), max_length=255)
 	section = models.ForeignKey(Section, on_delete=models.CASCADE)
 	url = models.URLField(default="")
+
+	def __str__(self):
+		return self.name
+

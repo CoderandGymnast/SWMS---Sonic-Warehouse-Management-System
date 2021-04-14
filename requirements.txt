@@ -1,3 +1,7 @@
 django
 python-socketio
 opencv-python
+imutils
+eventlet
+pyzbar
+webptools
